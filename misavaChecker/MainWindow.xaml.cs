@@ -30,9 +30,7 @@ public partial class MainWindow : Window
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ButtonState == MouseButtonState.Pressed)
-        {
             DragMove();
-        }
     }
 
     private void MinimizeButton_Click(object sender, RoutedEventArgs e)
@@ -58,9 +56,9 @@ public partial class MainWindow : Window
     private void UpdateFunctionStatuses()
     {
         SetHyperVStatus();
+        SetVbsStatus();
+        SetHvciStatus();
 
-        VbsButton.Content = "VBS — статус";
-        HvciButton.Content = "HVCI — статус";
         DmaButton.Content = "DMA — статус";
         UacButton.Content = "UAC — статус";
         BlocklistButton.Content = "Blocklist — статус";
@@ -83,19 +81,29 @@ public partial class MainWindow : Window
         }
     }
 
+    private void SetVbsStatus()
+    {
+        VbsButton.Content = SystemFeaturesService.IsVbsEnabled()
+            ? "VBS включен"
+            : "VBS выключен";
+    }
+
+    private void SetHvciStatus()
+    {
+        HvciButton.Content = SystemFeaturesService.IsHvciEnabled()
+            ? "HVCI включен"
+            : "HVCI выключен";
+    }
+
     private void HyperVButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             var enabled = SystemFeaturesService.IsHyperVEnabled();
             var action = enabled ? "выключить" : "включить";
-            var state = enabled ? "Hyper-V включен" : "Hyper-V выключен";
-
-            var message = state + "." + Environment.NewLine + Environment.NewLine;
-            message += "Вы хотите " + action + " Hyper-V?";
 
             var result = MessageBox.Show(
-                message,
+                $"Hyper-V сейчас {(enabled ? "включен" : "выключен")}.\n\nВы хотите {action} Hyper-V?",
                 "Hyper-V",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
@@ -105,44 +113,91 @@ public partial class MainWindow : Window
 
             SystemFeaturesService.ToggleHyperV(!enabled);
             SetHyperVStatus();
-
-            MessageBox.Show(
-                "Изменение применено. Для завершения требуется перезагрузка Windows.",
-                "Hyper-V",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            ShowRebootMessage();
         }
         catch (System.ComponentModel.Win32Exception)
         {
-            MessageBox.Show(
-                "Операция отменена или не были предоставлены права администратора.",
-                "Hyper-V",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            ShowAdminCancelledMessage();
         }
         catch (Exception error)
         {
-            MessageBox.Show(
-                error.Message,
-                "Ошибка Hyper-V",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            ShowError("Ошибка Hyper-V", error);
         }
     }
 
     private void VbsButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("VBS", "Переключатель VBS добавим следующим этапом.");
+        ToggleVbs();
     }
 
     private void HvciButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("HVCI", "Переключатель HVCI добавим следующим этапом.");
+        ToggleHvci();
+    }
+
+    private void ToggleVbs()
+    {
+        try
+        {
+            var enabled = SystemFeaturesService.IsVbsEnabled();
+            var action = enabled ? "выключить" : "включить";
+
+            var result = MessageBox.Show(
+                $"VBS сейчас {(enabled ? "включен" : "выключен")}.\n\nВы хотите {action} VBS?",
+                "VBS",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            SystemFeaturesService.ToggleVbs(!enabled);
+            SetVbsStatus();
+            ShowRebootMessage();
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            ShowAdminCancelledMessage();
+        }
+        catch (Exception error)
+        {
+            ShowError("Ошибка VBS", error);
+        }
+    }
+
+    private void ToggleHvci()
+    {
+        try
+        {
+            var enabled = SystemFeaturesService.IsHvciEnabled();
+            var action = enabled ? "выключить" : "включить";
+
+            var result = MessageBox.Show(
+                $"HVCI сейчас {(enabled ? "включен" : "выключен")}.\n\nВы хотите {action} HVCI?",
+                "HVCI",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            SystemFeaturesService.ToggleHvci(!enabled);
+            SetHvciStatus();
+            ShowRebootMessage();
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            ShowAdminCancelledMessage();
+        }
+        catch (Exception error)
+        {
+            ShowError("Ошибка HVCI", error);
+        }
     }
 
     private void DmaButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("DMA", "Проверку DMA добавим следующим этапом.");
+        ShowFunctionMessage("DMA", "Чтение Kernel DMA Protection добавим следующим этапом.");
     }
 
     private void UacButton_Click(object sender, RoutedEventArgs e)
@@ -168,6 +223,33 @@ public partial class MainWindow : Window
     private void DebuggerButton_Click(object sender, RoutedEventArgs e)
     {
         ShowFunctionMessage("Отладчики", "Проверку процессов и служб добавим следующим этапом.");
+    }
+
+    private static void ShowRebootMessage()
+    {
+        MessageBox.Show(
+            "Изменение применено. Для завершения требуется перезагрузка Windows.",
+            "Misava Checker",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+    private static void ShowAdminCancelledMessage()
+    {
+        MessageBox.Show(
+            "Операция отменена или не были предоставлены права администратора.",
+            "Misava Checker",
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
+    }
+
+    private static void ShowError(string title, Exception error)
+    {
+        MessageBox.Show(
+            error.Message,
+            title,
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
     }
 
     private static void ShowFunctionMessage(string title, string message)
