@@ -20,6 +20,7 @@ public sealed class DashboardSnapshot
     public string Cpu { get; init; } = "Неизвестно";
     public string Gpu { get; init; } = "Неизвестно";
     public string Memory { get; init; } = "Неизвестно";
+    public string Virtualization { get; init; } = "Неизвестно";
     public string HyperV { get; init; } = "Неизвестно";
     public string Vbs { get; init; } = "Неизвестно";
     public string Hvci { get; init; } = "Неизвестно";
@@ -54,6 +55,7 @@ public static class DashboardCollector
             Cpu = Value(cpu, "Name"),
             Gpu = Value(gpu, "Name"),
             Memory = memory,
+            Virtualization = GetVirtualizationStatus(),
             HyperV = SystemFeaturesService.IsHyperVEnabled() ? "Включено" : "Отключено",
             Vbs = SystemFeaturesService.IsVbsEnabled() ? "Включено" : "Отключено",
             Hvci = SystemFeaturesService.IsHvciEnabled() ? "Включено" : "Отключено",
@@ -145,6 +147,23 @@ public static class DashboardCollector
     {
         return Registry.LocalMachine.OpenSubKey(
             @"SYSTEM\CurrentControlSet\Control")?.GetValue("PEFirmwareType") is not null;
+    }
+
+    private static string GetVirtualizationStatus()
+    {
+        try
+        {
+            var cpu = First("Win32_Processor");
+            var value = cpu?["VirtualizationFirmwareEnabled"];
+
+            return Convert.ToBoolean(value ?? false)
+                ? "Включено"
+                : "Отключено";
+        }
+        catch
+        {
+            return "Недоступно";
+        }
     }
 
     private static string GetSecureBootStatus()

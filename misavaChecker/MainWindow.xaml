@@ -35,7 +35,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="15,7"/>
             <Setter Property="Margin" Value="4,0"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="10"/>
             <Setter Property="Cursor" Value="Hand"/>
 
             <Style.Triggers>
@@ -57,8 +57,8 @@
             <Setter Property="Background" Value="#1A1C23"/>
             <Setter Property="BorderBrush" Value="#292D38"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="8,3"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="5,2"/>
+            <Setter Property="Height" Value="27"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Cursor" Value="Hand"/>
 
@@ -170,7 +170,7 @@
             <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="155"/>
+                    <ColumnDefinition Width="170"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Левая часть -->
@@ -554,47 +554,47 @@
                                    Margin="8,5,8,10"/>
 
                         <Button x:Name="HyperVButton"
-                                Content="HV — статус"
+                                Content="HV выкл."
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="HyperVButton_Click"/>
 
                         <Button x:Name="VbsButton"
-                                Content="VBS — статус"
+                                Content="VBS"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="VbsButton_Click"/>
 
                         <Button x:Name="HvciButton"
-                                Content="HVCI — статус"
+                                Content="HVCI"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="HvciButton_Click"/>
 
                         <Button x:Name="DmaButton"
-                                Content="DMA — статус"
+                                Content="DMA"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="DmaButton_Click"/>
 
                         <Button x:Name="UacButton"
-                                Content="UAC — статус"
+                                Content="UAC"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="UacButton_Click"/>
 
                         <Button x:Name="BlocklistButton"
-                                Content="Blocklist — статус"
+                                Content="Blocklist"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="BlocklistButton_Click"/>
 
                         <Button x:Name="DefenderButton"
-                                Content="Defender — статус"
+                                Content="Defender"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="DefenderButton_Click"/>
 
                         <Button x:Name="AntiCheatButton"
-                                Content="Античиты — статус"
+                                Content="Античиты"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="AntiCheatButton_Click"/>
 
                         <Button x:Name="DebuggerButton"
-                                Content="Отладчики — статус"
+                                Content="Отладчики"
                                 Style="{StaticResource SideButtonStyle}"
                                 Click="DebuggerButton_Click"/>
                     </StackPanel>

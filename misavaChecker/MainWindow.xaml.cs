@@ -69,7 +69,7 @@ public partial class MainWindow : Window
             SecureBootStatusText.Text = snapshot.SecureBoot;
             TpmStatusText.Text = snapshot.Tpm;
             VbsStatusText.Text = snapshot.Vbs;
-            VirtualizationStatusText.Text = snapshot.HyperV;
+            VirtualizationStatusText.Text = snapshot.Virtualization;
         }
         catch (Exception error)
         {
@@ -87,12 +87,12 @@ public partial class MainWindow : Window
         SetVbsStatus();
         SetHvciStatus();
 
-        DmaButton.Content = "DMA — статус";
-        UacButton.Content = "UAC — статус";
-        BlocklistButton.Content = "Blocklist — статус";
-        DefenderButton.Content = "Defender — статус";
-        AntiCheatButton.Content = "Античиты — статус";
-        DebuggerButton.Content = "Отладчики — статус";
+        DmaButton.Content = "DMA";
+        UacButton.Content = "UAC";
+        BlocklistButton.Content = "Blocklist";
+        DefenderButton.Content = "Defender";
+        AntiCheatButton.Content = "Античиты";
+        DebuggerButton.Content = "Отладчики";
     }
 
     private void SetHyperVStatus()
