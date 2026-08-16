@@ -1,0 +1,582 @@
+﻿<Window x:Class="MisavaChecker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Misava Checker"
+        Width="1280"
+        Height="820"
+        MinWidth="1000"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Opacity="1"
+        Loaded="Window_Loaded"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.Resources>
+
+        <!-- Цвета -->
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#101116"/>
+        <SolidColorBrush x:Key="PanelBrush" Color="#15171E"/>
+        <SolidColorBrush x:Key="PanelLightBrush" Color="#1B1E27"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#292D38"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#858A98"/>
+        <SolidColorBrush x:Key="GreenBrush" Color="#22C981"/>
+        <SolidColorBrush x:Key="RedBrush" Color="#F05252"/>
+        <SolidColorBrush x:Key="OrangeBrush" Color="#F07832"/>
+
+        <!-- Кнопки верхней панели -->
+        <Style x:Key="TopButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#D5D8E0"/>
+            <Setter Property="Background" Value="#20232C"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,7"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#303541"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#F07832"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Кнопки правой панели -->
+        <Style x:Key="SideButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#C4C8D2"/>
+            <Setter Property="Background" Value="#1A1C23"/>
+            <Setter Property="BorderBrush" Value="#292D38"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="8,3"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#303541"/>
+                    <Setter Property="BorderBrush" Value="#F07832"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#F07832"/>
+                    <Setter Property="BorderBrush" Value="#F07832"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Карточки -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <Style x:Key="StatusCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PanelLightBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Border Background="{StaticResource BackgroundBrush}"
+            BorderBrush="#303541"
+            BorderThickness="1"
+            CornerRadius="8">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="54"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Верхняя панель -->
+            <Border Grid.Row="0"
+                    Background="#12141A"
+                    BorderBrush="#292D38"
+                    BorderThickness="0,0,0,1">
+
+                <Grid>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="18,0,0,0">
+
+                        <TextBlock Text="MISAVA CHECKER"
+                                   Foreground="#F07832"
+                                   FontSize="15"
+                                   FontWeight="Bold"/>
+
+                        <TextBlock Text="  v0.1.0"
+                                   Foreground="#777D8B"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0,0,12,0">
+
+                        <Button Content="HWID"
+                                Style="{StaticResource TopButtonStyle}"
+                                Click="HwidButton_Click"/>
+
+                        <Button Content="Обновления"
+                                Style="{StaticResource TopButtonStyle}"/>
+
+                        <Button Content="Обновить"
+                                Style="{StaticResource TopButtonStyle}"/>
+
+                        <Button Content="RU"
+                                Style="{StaticResource TopButtonStyle}"/>
+
+                        <Button Content="EN"
+                                Style="{StaticResource TopButtonStyle}"/>
+
+                        <Button Content="—"
+                                Width="35"
+                                Style="{StaticResource TopButtonStyle}"
+                                Click="MinimizeButton_Click"/>
+
+                        <Button Content="×"
+                                Width="35"
+                                Foreground="#FF7777"
+                                Style="{StaticResource TopButtonStyle}"
+                                Click="CloseButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Основная область -->
+            <Grid Grid.Row="1" Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="155"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Левая часть -->
+                <ScrollViewer Grid.Column="0"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="270"/>
+                            <RowDefinition Height="270"/>
+                            <RowDefinition Height="230"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Верхние блоки -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.3*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Система -->
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="СИСТЕМА"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="ОС:"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="Microsoft Windows 11 Pro"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,2,0,12"/>
+
+                                    <TextBlock Text="Процессор:"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="12th Gen Intel Core i7"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,2,0,12"/>
+
+                                    <TextBlock Text="Видеокарта:"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="NVIDIA GeForce GTX 1660 Ti"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,2,0,12"/>
+
+                                    <TextBlock Text="Оперативная память:"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="31 GB @ 3000 MHz"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Безопасность -->
+                            <Border Grid.Column="1"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="БЕЗОПАСНОСТЬ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,12"/>
+
+                                    <UniformGrid Columns="2">
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Virtualization"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Включено"
+                                                           Foreground="{StaticResource RedBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Hyper-V"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Отключено"
+                                                           Foreground="{StaticResource GreenBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Secure Boot"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Включено"
+                                                           Foreground="{StaticResource GreenBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="TPM"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Включено"
+                                                           Foreground="{StaticResource GreenBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Defender"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Включено"
+                                                           Foreground="{StaticResource GreenBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="VBS"
+                                                           Foreground="{StaticResource TextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text="Отключено"
+                                                           Foreground="{StaticResource RedBrush}"
+                                                           FontSize="11"
+                                                           Margin="0,5,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ПО -->
+                            <Border Grid.Column="2"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="DirectX"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="12 (6.2.22621.5415)"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,3,0,14"/>
+
+                                    <TextBlock Text="Visual C++"
+                                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                                    <TextBlock Text="2010   x64 • x86"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,3,0,6"/>
+
+                                    <TextBlock Text="2012   x64 • x86"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,0,0,6"/>
+
+                                    <TextBlock Text="2013   x64 • x86"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,0,0,6"/>
+
+                                    <TextBlock Text="2015–2022   x64 • x86"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Антивирусы и диски -->
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="АНТИВИРУСЫ И АНТИЧИТЫ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,12"/>
+
+                                    <UniformGrid Columns="3">
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="Defender    Чисто"
+                                                       Foreground="{StaticResource GreenBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="ESET    Чисто"
+                                                       Foreground="{StaticResource GreenBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="Kaspersky    Чисто"
+                                                       Foreground="{StaticResource GreenBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="BattlEye    Установлен"
+                                                       Foreground="{StaticResource OrangeBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="VAC / Steam    Установлен"
+                                                       Foreground="{StaticResource OrangeBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+
+                                        <Border Style="{StaticResource StatusCardStyle}">
+                                            <TextBlock Text="Vanguard    Нет"
+                                                       Foreground="{StaticResource GreenBrush}"
+                                                       FontSize="11"/>
+                                        </Border>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="ДИСКИ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="Disk 0: KINGSTON SNVS2S1000G"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="SCSI | 931 GB | GPT"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="11"
+                                               Margin="0,0,0,18"/>
+
+                                    <TextBlock Text="Disk 1: WDC WD10EZEX"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="IDE | 931 GB | GPT"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Нижние блоки -->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="1.3*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="ЛАУНЧЕРЫ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="Steam                         Запущен"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Epic Games                  Запущен"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Riot Client                     Нет"
+                                               Foreground="{StaticResource GreenBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Battle.net                     Нет"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="ОВЕРЛЕИ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="Discord Overlay            Активен"
+                                               Foreground="{StaticResource OrangeBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Steam Overlay              Активен"
+                                               Foreground="{StaticResource OrangeBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="NVIDIA ShadowPlay       Активен"
+                                               Foreground="{StaticResource OrangeBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="OBS Studio                   Неактивен"
+                                               Foreground="{StaticResource GreenBrush}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    Style="{StaticResource CardStyle}">
+
+                                <StackPanel>
+                                    <TextBlock Text="МОНИТОРЫ"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,14"/>
+
+                                    <TextBlock Text="Display 1"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="1920x1080 @ 144 Hz"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="11"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Display 2"
+                                               Foreground="{StaticResource TextBrush}"
+                                               Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="1920x1080 @ 50 Hz"
+                                               Foreground="{StaticResource MutedTextBrush}"
+                                               FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </ScrollViewer>
+
+                <!-- Правая панель -->
+                <Border Grid.Column="1"
+                        Style="{StaticResource CardStyle}"
+                        Margin="5,5,0,5">
+
+                    <StackPanel>
+                        <TextBlock Text="ФУНКЦИИ"
+                                   Foreground="{StaticResource MutedTextBrush}"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   Margin="8,5,8,14"/>
+
+                        <Button Content="HWID"
+                                Style="{StaticResource SideButtonStyle}"
+                                Click="HwidButton_Click"/>
+
+                        <Button Content="Обновить"
+                                Style="{StaticResource SideButtonStyle}"/>
+
+                        <Button Content="Сканировать"
+                                Style="{StaticResource SideButtonStyle}"/>
+
+                        <Button Content="Безопасность"
+                                Style="{StaticResource SideButtonStyle}"/>
+
+                        <Button Content="Антивирусы"
+                                Style="{StaticResource SideButtonStyle}"/>
+
+                        <Button Content="Античиты"
+                                Style="{StaticResource SideButtonStyle}"/>
+
+                        <Button Content="Отладчики"
+                                Style="{StaticResource SideButtonStyle}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

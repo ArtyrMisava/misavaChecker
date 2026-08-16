@@ -1,0 +1,266 @@
+﻿<Window x:Class="MisavaChecker.HwidWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="HWID информация"
+        Width="920"
+        Height="720"
+        MinWidth="700"
+        MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#101116"
+        Foreground="#E5E7EB">
+
+    <Window.Resources>
+
+        <SolidColorBrush x:Key="PanelBrush"
+                         Color="#15171E"/>
+
+        <SolidColorBrush x:Key="BorderBrush"
+                         Color="#292D38"/>
+
+        <SolidColorBrush x:Key="MutedBrush"
+                         Color="#858A98"/>
+
+        <SolidColorBrush x:Key="OrangeBrush"
+                         Color="#F07832"/>
+
+        <SolidColorBrush x:Key="TextBrush"
+                         Color="#DDE1EA"/>
+
+        <Style x:Key="ActionButtonStyle"
+               TargetType="Button">
+
+            <Setter Property="Background"
+                    Value="#20232C"/>
+
+            <Setter Property="Foreground"
+                    Value="#D5D8E0"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#303541"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="Padding"
+                    Value="12,6"/>
+
+            <Setter Property="Margin"
+                    Value="3,0"/>
+
+            <Setter Property="FontSize"
+                    Value="10"/>
+
+            <Setter Property="Cursor"
+                    Value="Hand"/>
+
+            <Style.Triggers>
+
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+
+                    <Setter Property="Background"
+                            Value="#303541"/>
+
+                    <Setter Property="BorderBrush"
+                            Value="#F07832"/>
+
+                    <Setter Property="Foreground"
+                            Value="White"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed"
+                         Value="True">
+
+                    <Setter Property="Background"
+                            Value="#F07832"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="HwidRowTemplate">
+
+            <Border x:Name="RowBorder"
+                    Background="{Binding RowBackground}"
+                    BorderBrush="#292D38"
+                    BorderThickness="0,0,0,1"
+                    Padding="4,2">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Заголовок категории -->
+                    <TextBlock x:Name="CategoryText"
+                               Grid.ColumnSpan="2"
+                               Text="{Binding Category}"
+                               Foreground="{StaticResource OrangeBrush}"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Visibility="Collapsed"/>
+
+                    <!-- Название параметра -->
+                    <TextBlock x:Name="NameText"
+                               Grid.Column="0"
+                               Text="{Binding Name}"
+                               Foreground="{StaticResource MutedBrush}"
+                               FontSize="9"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+
+                    <!-- Значение -->
+                    <StackPanel x:Name="ValuePanel"
+                                Grid.Column="1">
+
+                        <TextBlock Text="{Binding CurrentValue}"
+                                   Foreground="{Binding ValueBrush}"
+                                   FontSize="9"
+                                   TextWrapping="Wrap"/>
+
+                        <TextBlock Text="{Binding PreviousText}"
+                                   Foreground="#777D8B"
+                                   FontSize="8"
+                                   Visibility="{Binding PreviousVisibility}"/>
+                    </StackPanel>
+                </Grid>
+
+                <Border.Style>
+                    <Style TargetType="Border">
+
+                        <Setter Property="Background"
+                                Value="#15171E"/>
+
+                        <Style.Triggers>
+
+                            <DataTrigger Binding="{Binding IsAlternate}"
+                                         Value="True">
+
+                                <Setter Property="Background"
+                                        Value="#1D2028"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
+            <DataTemplate.Triggers>
+
+                <!-- Отображение заголовка категории -->
+                <DataTrigger Binding="{Binding IsCategory}"
+                             Value="True">
+
+                    <Setter TargetName="CategoryText"
+                            Property="Visibility"
+                            Value="Visible"/>
+
+                    <Setter TargetName="NameText"
+                            Property="Visibility"
+                            Value="Collapsed"/>
+
+                    <Setter TargetName="ValuePanel"
+                            Property="Visibility"
+                            Value="Collapsed"/>
+
+                    <Setter TargetName="RowBorder"
+                            Property="Padding"
+                            Value="4,6,4,3"/>
+
+                    <Setter TargetName="RowBorder"
+                            Property="Background"
+                            Value="#101116"/>
+                </DataTrigger>
+
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid Margin="8">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="48"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <Border Grid.Row="0"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="6,6,0,0">
+
+            <Grid>
+
+                <TextBlock Text="HWID ИНФОРМАЦИЯ"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource OrangeBrush}"
+                           FontSize="12"
+                           FontWeight="Bold"/>
+
+                <TextBlock Text="локальный снимок системы"
+                           Margin="0,0,12,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource MutedBrush}"
+                           FontSize="9"/>
+            </Grid>
+        </Border>
+
+        <!-- Список информации -->
+        <Border Grid.Row="1"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1,0,1,0">
+
+            <ListBox x:Name="HwidList"
+                     Margin="3"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     ItemsSource="{Binding Rows}"
+                     ItemTemplate="{StaticResource HwidRowTemplate}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Border>
+
+        <!-- Нижняя панель -->
+        <Border Grid.Row="2"
+                Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="0,0,6,6">
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+
+                <Button Content="Сохранить снимок"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="SaveSnapshotButton_Click"/>
+
+                <Button Content="Сравнить"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="CompareButton_Click"/>
+
+                <Button Content="Копировать"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="CopyButton_Click"/>
+
+                <Button Content="Обновить"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="RefreshButton_Click"/>
+
+                <Button Content="OK"
+                        Width="55"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Click="CloseButton_Click"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>
