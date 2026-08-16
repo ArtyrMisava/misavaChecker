@@ -91,9 +91,9 @@
             <Setter Property="Background" Value="{StaticResource PanelLightBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="7"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="3"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="7,5"/>
+            <Setter Property="Margin" Value="2"/>
         </Style>
 
     </Window.Resources>
@@ -245,79 +245,29 @@
                                                FontWeight="Bold"
                                                Margin="0,0,0,12"/>
 
-                                    <UniformGrid Columns="2">
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="Virtualization"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock x:Name="VirtualizationStatusText" Text="Включено"
-                                                           Foreground="{StaticResource RedBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
+                                    <ItemsControl ItemsSource="{Binding SecurityItems}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="4"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
 
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="Hyper-V"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock x:Name="HyperVStatusText" Text="Отключено"
-                                                           Foreground="{StaticResource GreenBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="Secure Boot"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock x:Name="SecureBootStatusText" Text="Включено"
-                                                           Foreground="{StaticResource GreenBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="TPM"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock x:Name="TpmStatusText" Text="Включено"
-                                                           Foreground="{StaticResource GreenBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="Defender"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock Text="Включено"
-                                                           Foreground="{StaticResource GreenBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-
-                                        <Border Style="{StaticResource StatusCardStyle}">
-                                            <StackPanel>
-                                                <TextBlock Text="VBS"
-                                                           Foreground="{StaticResource TextBrush}"
-                                                           FontSize="11"/>
-                                                <TextBlock x:Name="VbsStatusText" Text="Отключено"
-                                                           Foreground="{StaticResource RedBrush}"
-                                                           FontSize="11"
-                                                           Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </UniformGrid>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource StatusCardStyle}">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   Foreground="{StaticResource TextBrush}"
+                                                                   FontSize="9"/>
+                                                        <TextBlock Text="{Binding Status}"
+                                                                   Foreground="{Binding Brush}"
+                                                                   FontSize="9"
+                                                                   Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                             </Border>
 

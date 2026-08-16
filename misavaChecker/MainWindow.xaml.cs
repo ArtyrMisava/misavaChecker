@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
@@ -7,9 +8,12 @@ namespace MisavaChecker;
 
 public partial class MainWindow : Window
 {
+    public ObservableCollection<SecurityCardViewModel> SecurityItems { get; } = new();
+
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = this;
         UpdateFunctionStatuses();
         UpdateDashboard();
     }
@@ -60,16 +64,17 @@ public partial class MainWindow : Window
         {
             var snapshot = DashboardCollector.Collect();
 
+            SecurityItems.Clear();
+            foreach (var item in SecurityCollector.Collect())
+            {
+                SecurityItems.Add(new SecurityCardViewModel(item));
+            }
+
             OperatingSystemText.Text = snapshot.OperatingSystem;
             CpuText.Text = snapshot.Cpu;
             GpuText.Text = snapshot.Gpu;
             MemoryText.Text = snapshot.Memory;
 
-            HyperVStatusText.Text = snapshot.HyperV;
-            SecureBootStatusText.Text = snapshot.SecureBoot;
-            TpmStatusText.Text = snapshot.Tpm;
-            VbsStatusText.Text = snapshot.Vbs;
-            VirtualizationStatusText.Text = snapshot.Virtualization;
         }
         catch (Exception error)
         {
@@ -280,5 +285,27 @@ public partial class MainWindow : Window
             title,
             MessageBoxButton.OK,
             MessageBoxImage.Information);
+    }
+}
+
+public sealed class SecurityCardViewModel
+{
+    public string Name { get; }
+    public string Status { get; }
+    public System.Windows.Media.Brush Brush { get; }
+
+    public SecurityCardViewModel(SecurityItem item)
+    {
+        Name = item.Name;
+        Status = item.Status;
+        Brush = item.Status switch
+        {
+            "Включено" => new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(240, 82, 82)),
+            "Отключено" => new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(34, 201, 129)),
+            _ => new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(232, 168, 62))
+        };
     }
 }
