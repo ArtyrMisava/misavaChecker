@@ -207,28 +207,28 @@
                                     <TextBlock Text="ОС:"
                                                Foreground="{StaticResource MutedTextBrush}"/>
 
-                                    <TextBlock Text="Microsoft Windows 11 Pro"
+                                    <TextBlock x:Name="OperatingSystemText" Text="Microsoft Windows 11 Pro"
                                                Foreground="{StaticResource TextBrush}"
                                                Margin="0,2,0,12"/>
 
                                     <TextBlock Text="Процессор:"
                                                Foreground="{StaticResource MutedTextBrush}"/>
 
-                                    <TextBlock Text="12th Gen Intel Core i7"
+                                    <TextBlock x:Name="CpuText" Text="12th Gen Intel Core i7"
                                                Foreground="{StaticResource TextBrush}"
                                                Margin="0,2,0,12"/>
 
                                     <TextBlock Text="Видеокарта:"
                                                Foreground="{StaticResource MutedTextBrush}"/>
 
-                                    <TextBlock Text="NVIDIA GeForce GTX 1660 Ti"
+                                    <TextBlock x:Name="GpuText" Text="NVIDIA GeForce GTX 1660 Ti"
                                                Foreground="{StaticResource TextBrush}"
                                                Margin="0,2,0,12"/>
 
                                     <TextBlock Text="Оперативная память:"
                                                Foreground="{StaticResource MutedTextBrush}"/>
 
-                                    <TextBlock Text="31 GB @ 3000 MHz"
+                                    <TextBlock x:Name="MemoryText" Text="31 GB @ 3000 MHz"
                                                Foreground="{StaticResource TextBrush}"
                                                Margin="0,2,0,0"/>
                                 </StackPanel>
@@ -251,7 +251,7 @@
                                                 <TextBlock Text="Virtualization"
                                                            Foreground="{StaticResource TextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Text="Включено"
+                                                <TextBlock x:Name="VirtualizationStatusText" Text="Включено"
                                                            Foreground="{StaticResource RedBrush}"
                                                            FontSize="11"
                                                            Margin="0,5,0,0"/>
@@ -263,7 +263,7 @@
                                                 <TextBlock Text="Hyper-V"
                                                            Foreground="{StaticResource TextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Text="Отключено"
+                                                <TextBlock x:Name="HyperVStatusText" Text="Отключено"
                                                            Foreground="{StaticResource GreenBrush}"
                                                            FontSize="11"
                                                            Margin="0,5,0,0"/>
@@ -275,7 +275,7 @@
                                                 <TextBlock Text="Secure Boot"
                                                            Foreground="{StaticResource TextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Text="Включено"
+                                                <TextBlock x:Name="SecureBootStatusText" Text="Включено"
                                                            Foreground="{StaticResource GreenBrush}"
                                                            FontSize="11"
                                                            Margin="0,5,0,0"/>
@@ -287,7 +287,7 @@
                                                 <TextBlock Text="TPM"
                                                            Foreground="{StaticResource TextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Text="Включено"
+                                                <TextBlock x:Name="TpmStatusText" Text="Включено"
                                                            Foreground="{StaticResource GreenBrush}"
                                                            FontSize="11"
                                                            Margin="0,5,0,0"/>
@@ -311,7 +311,7 @@
                                                 <TextBlock Text="VBS"
                                                            Foreground="{StaticResource TextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Text="Отключено"
+                                                <TextBlock x:Name="VbsStatusText" Text="Отключено"
                                                            Foreground="{StaticResource RedBrush}"
                                                            FontSize="11"
                                                            Margin="0,5,0,0"/>

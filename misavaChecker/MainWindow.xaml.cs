@@ -11,6 +11,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         UpdateFunctionStatuses();
+        UpdateDashboard();
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -51,6 +52,33 @@ public partial class MainWindow : Window
         };
 
         window.ShowDialog();
+    }
+
+    private void UpdateDashboard()
+    {
+        try
+        {
+            var snapshot = DashboardCollector.Collect();
+
+            OperatingSystemText.Text = snapshot.OperatingSystem;
+            CpuText.Text = snapshot.Cpu;
+            GpuText.Text = snapshot.Gpu;
+            MemoryText.Text = snapshot.Memory;
+
+            HyperVStatusText.Text = snapshot.HyperV;
+            SecureBootStatusText.Text = snapshot.SecureBoot;
+            TpmStatusText.Text = snapshot.Tpm;
+            VbsStatusText.Text = snapshot.Vbs;
+            VirtualizationStatusText.Text = snapshot.HyperV;
+        }
+        catch (Exception error)
+        {
+            MessageBox.Show(
+                error.Message,
+                "Ошибка сканирования системы",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     private void UpdateFunctionStatuses()
@@ -112,6 +140,7 @@ public partial class MainWindow : Window
                 return;
 
             SystemFeaturesService.ToggleHyperV(!enabled);
+            UpdateDashboard();
             SetHyperVStatus();
             ShowRebootMessage();
         }
@@ -126,16 +155,6 @@ public partial class MainWindow : Window
     }
 
     private void VbsButton_Click(object sender, RoutedEventArgs e)
-    {
-        ToggleVbs();
-    }
-
-    private void HvciButton_Click(object sender, RoutedEventArgs e)
-    {
-        ToggleHvci();
-    }
-
-    private void ToggleVbs()
     {
         try
         {
@@ -152,6 +171,7 @@ public partial class MainWindow : Window
                 return;
 
             SystemFeaturesService.ToggleVbs(!enabled);
+            UpdateDashboard();
             SetVbsStatus();
             ShowRebootMessage();
         }
@@ -165,7 +185,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ToggleHvci()
+    private void HvciButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
@@ -182,6 +202,7 @@ public partial class MainWindow : Window
                 return;
 
             SystemFeaturesService.ToggleHvci(!enabled);
+            UpdateDashboard();
             SetHvciStatus();
             ShowRebootMessage();
         }
@@ -197,12 +218,12 @@ public partial class MainWindow : Window
 
     private void DmaButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("DMA", "Чтение Kernel DMA Protection добавим следующим этапом.");
+        ShowFunctionMessage("DMA", "Проверка DMA уже отображается на главном экране.");
     }
 
     private void UacButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("UAC", "Переключатель UAC добавим следующим этапом.");
+        ShowFunctionMessage("UAC", "Статус UAC отображается на главном экране.");
     }
 
     private void BlocklistButton_Click(object sender, RoutedEventArgs e)
@@ -212,17 +233,17 @@ public partial class MainWindow : Window
 
     private void DefenderButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("Defender", "Проверку Defender добавим следующим этапом.");
+        ShowFunctionMessage("Defender", "Статус Defender отображается на главном экране.");
     }
 
     private void AntiCheatButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("Античиты", "Проверку служб античитов добавим следующим этапом.");
+        ShowFunctionMessage("Античиты", "Сканер античитов добавим следующим этапом.");
     }
 
     private void DebuggerButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage("Отладчики", "Проверку процессов и служб добавим следующим этапом.");
+        ShowFunctionMessage("Отладчики", "Сканер отладчиков добавим следующим этапом.");
     }
 
     private static void ShowRebootMessage()
