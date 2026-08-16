@@ -12,27 +12,28 @@ using System.Windows.Media;
 
 namespace MisavaChecker;
 
-public partial class HwidWindow : Window
+public partial class Window1 : Window
 {
-    private readonly string snapshotDirectory;
     private readonly string snapshotFile;
 
     public ObservableCollection<HwidRow> Rows { get; } = new();
 
-    public HwidWindow()
+    public Window1()
     {
         InitializeComponent();
 
         DataContext = this;
 
-        snapshotDirectory = Path.Combine(
+        var directory = Path.Combine(
             Environment.GetFolderPath(
                 Environment.SpecialFolder.LocalApplicationData),
             "MisavaChecker",
             "Snapshots");
 
+        Directory.CreateDirectory(directory);
+
         snapshotFile = Path.Combine(
-            snapshotDirectory,
+            directory,
             "baseline.json");
 
         LoadCurrentInformation();
@@ -42,10 +43,10 @@ public partial class HwidWindow : Window
     {
         Rows.Clear();
 
-        var data = CollectAllInformation();
+        var values = CollectAllInformation();
         var alternate = false;
 
-        foreach (var item in data)
+        foreach (var item in values)
         {
             if (item.Key.StartsWith("[CATEGORY]"))
             {
@@ -72,24 +73,24 @@ public partial class HwidWindow : Window
 
     private Dictionary<string, string> CollectAllInformation()
     {
-        var data = new Dictionary<string, string>();
+        var values = new Dictionary<string, string>();
 
-        CollectNetwork(data);
-        CollectStorage(data);
-        CollectSystem(data);
-        CollectRegistry(data);
-        CollectGraphics(data);
-        CollectMemory(data);
-        CollectDevices(data);
-        CollectTpm(data);
+        CollectNetwork(values);
+        CollectStorage(values);
+        CollectSystem(values);
+        CollectRegistry(values);
+        CollectGpu(values);
+        CollectMemory(values);
+        CollectDevices(values);
+        CollectTpm(values);
 
-        return data;
+        return values;
     }
 
     private static void CollectNetwork(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Сеть");
+        AddCategory(values, "Сеть");
 
         foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
         {
@@ -98,37 +99,25 @@ public partial class HwidWindow : Window
             if (string.IsNullOrWhiteSpace(mac))
                 continue;
 
-            var prefix = adapter.Description;
-
             AddValue(
-                data,
-                $"MAC-адрес ({prefix})",
+                values,
+                $"MAC-адрес ({adapter.Description})",
                 FormatMac(mac));
 
             AddValue(
-                data,
-                $"GUID адаптера ({prefix})",
+                values,
+                $"GUID адаптера ({adapter.Description})",
                 adapter.Id);
 
             AddValue(
-                data,
-                $"Имя адаптера ({prefix})",
-                adapter.Name);
-
-            AddValue(
-                data,
-                $"Статус ({prefix})",
+                values,
+                $"Статус ({adapter.Name})",
                 adapter.OperationalStatus.ToString());
-
-            AddValue(
-                data,
-                $"Тип ({prefix})",
-                adapter.NetworkInterfaceType.ToString());
         }
 
-        AddWmiCollection(
-            data,
-            "Сетевые устройства",
+        AddWmi(
+            values,
+            "Сетевые адаптеры",
             "Win32_NetworkAdapter",
             new[]
             {
@@ -136,18 +125,17 @@ public partial class HwidWindow : Window
                 "MACAddress",
                 "GUID",
                 "PNPDeviceID",
-                "Manufacturer",
-                "NetConnectionStatus"
+                "Manufacturer"
             });
     }
 
     private static void CollectStorage(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Накопители");
+        AddCategory(values, "Накопители");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Диски",
             "Win32_DiskDrive",
             new[]
@@ -161,8 +149,8 @@ public partial class HwidWindow : Window
                 "Size"
             });
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Тома",
             "Win32_LogicalDisk",
             new[]
@@ -177,39 +165,39 @@ public partial class HwidWindow : Window
     }
 
     private static void CollectSystem(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Система");
+        AddCategory(values, "Система");
 
         AddValue(
-            data,
+            values,
             "Имя ПК",
             Environment.MachineName);
 
         AddValue(
-            data,
+            values,
             "Пользователь",
             Environment.UserName);
 
         AddValue(
-            data,
+            values,
             "ОС",
             Environment.OSVersion.ToString());
 
         AddValue(
-            data,
+            values,
             "Архитектура",
             Environment.Is64BitOperatingSystem
                 ? "x64"
                 : "x86");
 
         AddValue(
-            data,
-            "Количество CPU-потоков",
+            values,
+            "CPU-потоки",
             Environment.ProcessorCount.ToString());
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Процессор",
             "Win32_Processor",
             new[]
@@ -222,8 +210,8 @@ public partial class HwidWindow : Window
                 "MaxClockSpeed"
             });
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Материнская плата",
             "Win32_BaseBoard",
             new[]
@@ -234,22 +222,21 @@ public partial class HwidWindow : Window
                 "SerialNumber"
             });
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "BIOS",
             "Win32_BIOS",
             new[]
             {
                 "Manufacturer",
-                "Name",
                 "SMBIOSBIOSVersion",
                 "SerialNumber",
                 "Version",
                 "ReleaseDate"
             });
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Компьютер",
             "Win32_ComputerSystemProduct",
             new[]
@@ -257,79 +244,59 @@ public partial class HwidWindow : Window
                 "Vendor",
                 "Name",
                 "Version",
-                "IdentifyingNumber",
                 "UUID"
-            });
-
-        AddWmiCollection(
-            data,
-            "Операционная система",
-            "Win32_OperatingSystem",
-            new[]
-            {
-                "Caption",
-                "Version",
-                "BuildNumber",
-                "SerialNumber",
-                "OSArchitecture"
             });
     }
 
     private static void CollectRegistry(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Реестр");
+        AddCategory(values, "Реестр");
 
-        AddRegistryValue(
-            data,
+        AddRegistry(
+            values,
             "MachineGuid",
             @"SOFTWARE\Microsoft\Cryptography",
             "MachineGuid");
 
-        AddRegistryValue(
-            data,
+        AddRegistry(
+            values,
             "ProductId",
             @"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "ProductId");
 
-        AddRegistryValue(
-            data,
+        AddRegistry(
+            values,
             "ProductName",
             @"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "ProductName");
 
-        AddRegistryValue(
-            data,
+        AddRegistry(
+            values,
             "CurrentBuild",
             @"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "CurrentBuild");
 
-        AddRegistryValue(
-            data,
+        AddRegistry(
+            values,
             "BuildLabEx",
             @"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
             "BuildLabEx");
 
-        AddRegistryValue(
-            data,
-            "InstallDate",
-            @"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
-            "InstallDate");
-
-        AddRegistryValue(
-            data,
-            "HardwareConfig",
+        AddRegistry(
+            values,
+            "HardwareProfileGuid",
             @"SYSTEM\CurrentControlSet\Control\IDConfigDB\Hardware Profiles\0001",
             "HwProfileGuid");
     }
 
-    private static void CollectGraphics(
-        Dictionary<string, string> data)
+    private static void CollectGpu(
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Видеокарта");
+        AddCategory(values, "Видеокарта");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "GPU",
             "Win32_VideoController",
             new[]
@@ -343,18 +310,17 @@ public partial class HwidWindow : Window
                 "VideoModeDescription",
                 "CurrentHorizontalResolution",
                 "CurrentVerticalResolution",
-                "CurrentRefreshRate",
-                "Status"
+                "CurrentRefreshRate"
             });
     }
 
     private static void CollectMemory(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "Память");
+        AddCategory(values, "Память");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "RAM",
             "Win32_PhysicalMemory",
             new[]
@@ -366,19 +332,18 @@ public partial class HwidWindow : Window
                 "Speed",
                 "ConfiguredClockSpeed",
                 "SMBIOSMemoryType",
-                "MemoryType",
                 "DeviceLocator",
                 "BankLabel"
             });
     }
 
     private static void CollectDevices(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "USB / Устройства");
+        AddCategory(values, "USB / Устройства");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "USB",
             "Win32_PnPEntity",
             new[]
@@ -390,10 +355,10 @@ public partial class HwidWindow : Window
             },
             "PNPDeviceID LIKE 'USB%'");
 
-        AddCategory(data, "HID");
+        AddCategory(values, "HID");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "HID",
             "Win32_PnPEntity",
             new[]
@@ -405,11 +370,11 @@ public partial class HwidWindow : Window
             },
             "PNPDeviceID LIKE 'HID%'");
 
-        AddCategory(data, "Audio");
+        AddCategory(values, "Audio");
 
-        AddWmiCollection(
-            data,
-            "Аудиоустройства",
+        AddWmi(
+            values,
+            "Audio",
             "Win32_SoundDevice",
             new[]
             {
@@ -420,10 +385,10 @@ public partial class HwidWindow : Window
                 "Status"
             });
 
-        AddCategory(data, "Bluetooth");
+        AddCategory(values, "Bluetooth");
 
-        AddWmiCollection(
-            data,
+        AddWmi(
+            values,
             "Bluetooth",
             "Win32_PnPEntity",
             new[]
@@ -437,9 +402,9 @@ public partial class HwidWindow : Window
     }
 
     private static void CollectTpm(
-        Dictionary<string, string> data)
+        Dictionary<string, string> values)
     {
-        AddCategory(data, "TPM / Безопасность");
+        AddCategory(values, "TPM / Безопасность");
 
         try
         {
@@ -461,56 +426,47 @@ public partial class HwidWindow : Window
                 found = true;
 
                 AddValue(
-                    data,
+                    values,
                     "TPM / ManufacturerId",
                     GetProperty(tpm, "ManufacturerId"));
 
                 AddValue(
-                    data,
+                    values,
                     "TPM / ManufacturerVersion",
                     GetProperty(tpm, "ManufacturerVersion"));
 
                 AddValue(
-                    data,
+                    values,
                     "TPM / IsEnabled",
                     GetProperty(tpm, "IsEnabled_InitialValue"));
 
                 AddValue(
-                    data,
+                    values,
                     "TPM / IsActivated",
                     GetProperty(tpm, "IsActivated_InitialValue"));
 
                 AddValue(
-                    data,
+                    values,
                     "TPM / IsOwned",
                     GetProperty(tpm, "IsOwned_InitialValue"));
             }
 
             if (!found)
             {
-                AddValue(
-                    data,
-                    "TPM",
-                    "TPM не найден");
+                AddValue(values, "TPM", "TPM не найден");
             }
         }
         catch (Exception error)
         {
             AddValue(
-                data,
+                values,
                 "TPM",
                 $"Недоступен: {error.Message}");
         }
-
-        AddRegistryValue(
-            data,
-            "TPM / Registry",
-            @"SYSTEM\CurrentControlSet\Services\TPM",
-            "Start");
     }
 
-    private static void AddWmiCollection(
-        Dictionary<string, string> data,
+    private static void AddWmi(
+        Dictionary<string, string> values,
         string groupName,
         string className,
         string[] properties,
@@ -518,8 +474,7 @@ public partial class HwidWindow : Window
     {
         try
         {
-            var query =
-                $"SELECT * FROM {className}";
+            var query = $"SELECT * FROM {className}";
 
             if (!string.IsNullOrWhiteSpace(condition))
             {
@@ -529,56 +484,40 @@ public partial class HwidWindow : Window
             using var searcher =
                 new ManagementObjectSearcher(query);
 
-            var uniqueDevices =
-                new HashSet<string>(
-                    StringComparer.OrdinalIgnoreCase);
+            var unique = new HashSet<string>(
+                StringComparer.OrdinalIgnoreCase);
 
             var index = 0;
 
             foreach (ManagementObject item in searcher.Get())
             {
                 var name = GetProperty(item, "Name");
-                var pnpId = GetProperty(item, "PNPDeviceID");
-                var deviceId = GetProperty(item, "DeviceID");
-
-                if (string.IsNullOrWhiteSpace(name) &&
-                    string.IsNullOrWhiteSpace(pnpId) &&
-                    string.IsNullOrWhiteSpace(deviceId))
-                {
-                    continue;
-                }
+                var pnp = GetProperty(item, "PNPDeviceID");
+                var device = GetProperty(item, "DeviceID");
 
                 var uniqueKey =
-                    $"{name.Trim()}|{pnpId.Trim()}|{deviceId.Trim()}";
+                    $"{name}|{pnp}|{device}";
 
-                if (!uniqueDevices.Add(uniqueKey))
-                {
+                if (!unique.Add(uniqueKey))
                     continue;
-                }
 
                 if (ShouldIgnoreDevice(name))
-                {
                     continue;
-                }
 
-                var itemName = index == 0
+                var prefix = index == 0
                     ? groupName
                     : $"{groupName} {index}";
 
                 foreach (var property in properties)
                 {
-                    var value = GetProperty(
-                        item,
-                        property);
+                    var value = GetProperty(item, property);
 
                     if (string.IsNullOrWhiteSpace(value))
-                    {
                         continue;
-                    }
 
                     AddValue(
-                        data,
-                        $"{itemName} / {property}",
+                        values,
+                        $"{prefix} / {property}",
                         value);
                 }
 
@@ -587,16 +526,13 @@ public partial class HwidWindow : Window
 
             if (index == 0)
             {
-                AddValue(
-                    data,
-                    groupName,
-                    "Не найдено");
+                AddValue(values, groupName, "Не найдено");
             }
         }
         catch (Exception error)
         {
             AddValue(
-                data,
+                values,
                 groupName,
                 $"Недоступно: {error.Message}");
         }
@@ -606,9 +542,7 @@ public partial class HwidWindow : Window
         string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
-        {
             return true;
-        }
 
         var value = name.ToLowerInvariant();
 
@@ -622,11 +556,11 @@ public partial class HwidWindow : Window
 
     private static string GetProperty(
         ManagementObject item,
-        string propertyName)
+        string property)
     {
         try
         {
-            var value = item[propertyName];
+            var value = item[property];
 
             if (value is Array array)
             {
@@ -636,36 +570,35 @@ public partial class HwidWindow : Window
             }
 
             return value?.ToString()?.Trim()
-                   ?? string.Empty;
+                   ?? "";
         }
         catch
         {
-            return string.Empty;
+            return "";
         }
     }
 
     private static void AddCategory(
-        Dictionary<string, string> data,
+        Dictionary<string, string> values,
         string category)
     {
-        data[$"[CATEGORY]{data.Count:D8}"] = category;
+        values[$"[CATEGORY]{values.Count:D8}"] =
+            category;
     }
 
     private static void AddValue(
-        Dictionary<string, string> data,
+        Dictionary<string, string> values,
         string name,
         string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            value = "Не найдено";
-        }
-
-        data[name] = value.Trim();
+        values[name] =
+            string.IsNullOrWhiteSpace(value)
+                ? "Не найдено"
+                : value.Trim();
     }
 
-    private static void AddRegistryValue(
-        Dictionary<string, string> data,
+    private static void AddRegistry(
+        Dictionary<string, string> values,
         string name,
         string path,
         string valueName)
@@ -675,72 +608,39 @@ public partial class HwidWindow : Window
             using var key =
                 Registry.LocalMachine.OpenSubKey(path);
 
-            var value =
-                key?.GetValue(valueName)?.ToString();
-
-            AddValue(data, name, value);
+            AddValue(
+                values,
+                name,
+                key?.GetValue(valueName)?.ToString());
         }
         catch
         {
-            AddValue(data, name, "Не найдено");
+            AddValue(values, name, "Не найдено");
         }
     }
 
     private static string FormatMac(string mac)
     {
         if (mac.Length != 12)
-        {
             return mac;
-        }
 
         return string.Join(
             ":",
             Enumerable.Range(0, 6)
-                .Select(index =>
-                    mac.Substring(index * 2, 2)));
+                .Select(i => mac.Substring(i * 2, 2)));
     }
 
-    private static string FormatBytes(
-        string? value)
+    private static void SaveText(
+        string path,
+        string text)
     {
-        return long.TryParse(
-            value,
-            out var bytes)
-            ? FormatBytes(bytes)
-            : "Не найдено";
-    }
-
-    private static string FormatBytes(long bytes)
-    {
-        string[] units =
-        {
-            "B",
-            "KB",
-            "MB",
-            "GB",
-            "TB"
-        };
-
-        double value = bytes;
-        var unit = 0;
-
-        while (value >= 1024 &&
-               unit < units.Length - 1)
-        {
-            value /= 1024;
-            unit++;
-        }
-
-        return $"{value:0.##} {units[unit]}";
+        File.WriteAllText(path, text);
     }
 
     private void SaveSnapshotButton_Click(
         object sender,
         RoutedEventArgs e)
     {
-        Directory.CreateDirectory(
-            snapshotDirectory);
-
         var snapshot = Rows
             .Where(row => !row.IsCategory)
             .ToDictionary(
@@ -754,12 +654,10 @@ public partial class HwidWindow : Window
                 WriteIndented = true
             });
 
-        File.WriteAllText(
-            snapshotFile,
-            json);
+        SaveText(snapshotFile, json);
 
         MessageBox.Show(
-            "Текущий снимок сохранён.",
+            "Снимок сохранён.",
             "Misava Checker",
             MessageBoxButton.OK,
             MessageBoxImage.Information);
@@ -772,7 +670,7 @@ public partial class HwidWindow : Window
         if (!File.Exists(snapshotFile))
         {
             MessageBox.Show(
-                "Сначала нажми «Сохранить снимок».",
+                "Сначала сохрани базовый снимок.",
                 "Misava Checker",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
@@ -786,15 +684,10 @@ public partial class HwidWindow : Window
                 File.ReadAllText(snapshotFile))
             ?? new Dictionary<string, string>();
 
-        var currentValues =
-            CollectAllInformation();
-
         foreach (var row in Rows)
         {
             if (row.IsCategory)
-            {
                 continue;
-            }
 
             if (!oldValues.TryGetValue(
                     row.Name,
@@ -815,30 +708,13 @@ public partial class HwidWindow : Window
             }
         }
 
-        foreach (var oldValue in oldValues)
-        {
-            if (currentValues.ContainsKey(
-                    oldValue.Key))
-            {
-                continue;
-            }
-
-            Rows.Add(new HwidRow
-            {
-                Name = oldValue.Key,
-                CurrentValue = "значение отсутствует",
-                PreviousValue = oldValue.Value,
-                IsChanged = true
-            });
-        }
-
         HwidList.Items.Refresh();
 
-        var changedCount =
-            Rows.Count(row => row.IsChanged);
+        var count = Rows.Count(
+            row => row.IsChanged);
 
         MessageBox.Show(
-            $"Сравнение завершено.\nИзменено строк: {changedCount}",
+            $"Сравнение завершено.\nИзменено строк: {count}",
             "Misava Checker",
             MessageBoxButton.OK,
             MessageBoxImage.Information);

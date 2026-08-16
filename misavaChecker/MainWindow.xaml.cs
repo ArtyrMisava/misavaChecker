@@ -25,7 +25,9 @@ public partial class MainWindow : Window
             Duration = TimeSpan.FromMilliseconds(350)
         };
 
-        BeginAnimation(OpacityProperty, animation);
+        BeginAnimation(
+            OpacityProperty,
+            animation);
     }
 
     private void Window_MouseLeftButtonDown(
@@ -53,10 +55,10 @@ public partial class MainWindow : Window
     }
 
     private void HwidButton_Click(
-    object sender,
-    RoutedEventArgs e)
+        object sender,
+        RoutedEventArgs e)
     {
-        var window = new HwidWindow
+        var window = new Window1
         {
             Owner = this
         };
