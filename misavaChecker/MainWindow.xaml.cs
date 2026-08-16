@@ -57,78 +57,117 @@ public partial class MainWindow : Window
 
     private void UpdateFunctionStatuses()
     {
-        HyperVButton.Content = "HV — статус";
-        VbsButton.Content = "VBS — статус";
-        HvciButton.Content = "HVCI — статус";
-        DmaButton.Content = "DMA — статус";
-        UacButton.Content = "UAC — статус";
-        BlocklistButton.Content = "Blocklist — статус";
-        DefenderButton.Content = "Defender — статус";
-        AntiCheatButton.Content = "Античиты — статус";
-        DebuggerButton.Content = "Отладчики — статус";
+        SetHyperVStatus();
+
+        VbsButton.Content = "VBS вЂ” СЃС‚Р°С‚СѓСЃ";
+        HvciButton.Content = "HVCI вЂ” СЃС‚Р°С‚СѓСЃ";
+        DmaButton.Content = "DMA вЂ” СЃС‚Р°С‚СѓСЃ";
+        UacButton.Content = "UAC вЂ” СЃС‚Р°С‚СѓСЃ";
+        BlocklistButton.Content = "Blocklist вЂ” СЃС‚Р°С‚СѓСЃ";
+        DefenderButton.Content = "Defender вЂ” СЃС‚Р°С‚СѓСЃ";
+        AntiCheatButton.Content = "РђРЅС‚РёС‡РёС‚С‹ вЂ” СЃС‚Р°С‚СѓСЃ";
+        DebuggerButton.Content = "РћС‚Р»Р°РґС‡РёРєРё вЂ” СЃС‚Р°С‚СѓСЃ";
+    }
+
+    private void SetHyperVStatus()
+    {
+        try
+        {
+            HyperVButton.Content = SystemFeaturesService.IsHyperVEnabled()
+                ? "HV РІРєР»СЋС‡РµРЅ"
+                : "HV РІС‹РєР»СЋС‡РµРЅ";
+        }
+        catch
+        {
+            HyperVButton.Content = "HV РЅРµРёР·РІРµСЃС‚РЅРѕ";
+        }
     }
 
     private void HyperVButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "Hyper-V",
-            "Управление Hyper-V будет подключено следующим этапом.");
+        try
+        {
+            var enabled = SystemFeaturesService.IsHyperVEnabled();
+            var action = enabled ? "РІС‹РєР»СЋС‡РёС‚СЊ" : "РІРєР»СЋС‡РёС‚СЊ";
+            var state = enabled ? "Hyper-V РІРєР»СЋС‡РµРЅ" : "Hyper-V РІС‹РєР»СЋС‡РµРЅ";
+
+            var message = state + "." + Environment.NewLine + Environment.NewLine;
+            message += "Р’С‹ С…РѕС‚РёС‚Рµ " + action + " Hyper-V?";
+
+            var result = MessageBox.Show(
+                message,
+                "Hyper-V",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            SystemFeaturesService.ToggleHyperV(!enabled);
+            SetHyperVStatus();
+
+            MessageBox.Show(
+                "РР·РјРµРЅРµРЅРёРµ РїСЂРёРјРµРЅРµРЅРѕ. Р”Р»СЏ Р·Р°РІРµСЂС€РµРЅРёСЏ С‚СЂРµР±СѓРµС‚СЃСЏ РїРµСЂРµР·Р°РіСЂСѓР·РєР° Windows.",
+                "Hyper-V",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (System.ComponentModel.Win32Exception)
+        {
+            MessageBox.Show(
+                "РћРїРµСЂР°С†РёСЏ РѕС‚РјРµРЅРµРЅР° РёР»Рё РЅРµ Р±С‹Р»Рё РїСЂРµРґРѕСЃС‚Р°РІР»РµРЅС‹ РїСЂР°РІР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°.",
+                "Hyper-V",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+        catch (Exception error)
+        {
+            MessageBox.Show(
+                error.Message,
+                "РћС€РёР±РєР° Hyper-V",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     private void VbsButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "VBS",
-            "Управление VBS будет подключено следующим этапом.");
+        ShowFunctionMessage("VBS", "РџРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ VBS РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void HvciButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "HVCI",
-            "Управление изоляцией ядра будет подключено следующим этапом.");
+        ShowFunctionMessage("HVCI", "РџРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ HVCI РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void DmaButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "DMA",
-            "Проверка защиты от DMA-атак будет подключена следующим этапом.");
+        ShowFunctionMessage("DMA", "РџСЂРѕРІРµСЂРєСѓ DMA РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void UacButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "UAC",
-            "Управление UAC будет подключено следующим этапом.");
+        ShowFunctionMessage("UAC", "РџРµСЂРµРєР»СЋС‡Р°С‚РµР»СЊ UAC РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void BlocklistButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "Blocklist",
-            "Проверка блокировки уязвимых драйверов будет подключена следующим этапом.");
+        ShowFunctionMessage("Blocklist", "РџСЂРѕРІРµСЂРєСѓ Blocklist РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void DefenderButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "Defender",
-            "Проверка Microsoft Defender будет подключена следующим этапом.");
+        ShowFunctionMessage("Defender", "РџСЂРѕРІРµСЂРєСѓ Defender РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void AntiCheatButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "Античиты",
-            "Проверка служб античитов будет подключена следующим этапом.");
+        ShowFunctionMessage("РђРЅС‚РёС‡РёС‚С‹", "РџСЂРѕРІРµСЂРєСѓ СЃР»СѓР¶Р± Р°РЅС‚РёС‡РёС‚РѕРІ РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private void DebuggerButton_Click(object sender, RoutedEventArgs e)
     {
-        ShowFunctionMessage(
-            "Отладчики",
-            "Проверка процессов и служб отладчиков будет подключена следующим этапом.");
+        ShowFunctionMessage("РћС‚Р»Р°РґС‡РёРєРё", "РџСЂРѕРІРµСЂРєСѓ РїСЂРѕС†РµСЃСЃРѕРІ Рё СЃР»СѓР¶Р± РґРѕР±Р°РІРёРј СЃР»РµРґСѓСЋС‰РёРј СЌС‚Р°РїРѕРј.");
     }
 
     private static void ShowFunctionMessage(string title, string message)
